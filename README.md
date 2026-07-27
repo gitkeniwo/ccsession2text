@@ -1,5 +1,8 @@
 # ccsession2text
 
+<img width="912" height="457" alt="image" src="https://github.com/user-attachments/assets/ad0c912b-4dc9-48af-988f-a109b3c8c36f" />
+
+
 Turn a Claude Code session export into compact Markdown for continuing work in a
 new chat. It keeps the conversation, tool calls, and code-change summary while
 dropping images, hook logs, skill listings, and other low-signal export data.
