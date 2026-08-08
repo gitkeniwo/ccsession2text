@@ -1,7 +1,7 @@
 #!/usr/bin/env -S uv run --script
 # /// script
 # requires-python = ">=3.10"
-# dependencies = ["typer"]
+# dependencies = ["typer", "pyperclip"]
 # ///
 """ccsession2text.py - Convert a Claude Code session export into condensed Markdown.
 
@@ -40,6 +40,7 @@ from enum import Enum
 from pathlib import Path
 from typing import Optional
 
+import pyperclip
 import typer
 
 BIG = 10**9
@@ -737,20 +738,34 @@ def main(
     ),
     thinking: bool = typer.Option(False, "--thinking", help="Keep thinking blocks (dropped by default)"),
     stats_flag: bool = typer.Option(False, "--stats", help="Print stats and any unrecognized types"),
+    copy: bool = typer.Option(
+        False, "-c", "--copy",
+        help="Also copy the generated Markdown to the system clipboard (like `cat out.md | pbcopy`)",
+    ),
 ):
     stats = Counter()
     records, meta, source = load_records(path, stats)
     ctx = Ctx(level=LEVELS[level.value], thinking=thinking)
     text = render(records, meta, ctx, source, stats)
 
+    clip_note = ""
+    if copy:
+        try:
+            pyperclip.copy(text)
+            clip_note = f" (+ {len(text):,} chars on clipboard)"
+        except Exception as exc:
+            clip_note = f" (:warning: clipboard copy failed: {exc})"
+
     if out == "-":
         sys.stdout.write(text)
+        if clip_note:
+            typer.echo(clip_note.strip(), err=True)
     else:
         base = path.name.removesuffix(".zip").removesuffix(".jsonl")
         out_path = Path(out) if out else path.resolve().parent / f"{base}.md"
         out_path.parent.mkdir(parents=True, exist_ok=True)
         out_path.write_text(text, encoding="utf-8")
-        typer.echo(f"-> {out_path}  ({len(text):,} chars, ~{est_tokens(text):,} tokens)", err=True)
+        typer.echo(f"-> {out_path}  ({len(text):,} chars, ~{est_tokens(text):,} tokens){clip_note}", err=True)
 
     if stats_flag:
         raw = sum(len(json.dumps(r, ensure_ascii=False)) for r in records)

@@ -52,11 +52,17 @@ detail:
 ccsession2text.py ./exports/session-export.zip -o context.md
 ccsession2text.py ./exports/session-export.zip -o -
 ccsession2text.py ./exports/session-export.zip --level minimal
+ccsession2text.py ./exports/session-export.zip -c   # also copy to clipboard
 ```
+
+`-c`/`--copy` puts the generated Markdown on the system clipboard in addition
+to writing the file (equivalent to `cat out.md | pbcopy` on macOS), so you can
+paste it straight into a new chat without opening the file.
 
 ## Options
 
 ```text
+-c, --copy                     Also copy the generated Markdown to the clipboard
 --level minimal|balanced|full  Condensation level (default: balanced)
 --thinking                     Include thinking blocks
 --stats                        Print parsing and compression statistics
