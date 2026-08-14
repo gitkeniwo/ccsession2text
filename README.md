@@ -70,3 +70,9 @@ paste it straight into a new chat without opening the file.
 ```
 
 Run `ccsession2text.py --help` for the complete CLI reference.
+
+## Agent skill
+
+An agent skill for continuing a past session in a new chat is available under
+[`skill/`](skill/). See [skill/README.md](skill/README.md) for installation
+instructions.
